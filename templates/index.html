@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mine Prediction</title>
+<style>
+/* ... (Your existing CSS styles) ... */
+body {
+    font-family: sans-serif;
+}
+.container {
+    width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+input[type="number"], 
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+#result {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Mine Prediction</h1>
+
+    <label for="mine_name">Mine Name:</label>
+    <input type="text" id="mine_name" name="mine_name" required>
+
+    <label for="year">Year:</label>
+    <input type="number" id="year" name="year" min="2024" max="2033" required>
+
+    <label for="factor">Factor:</label>
+    <select id="factor" name="factor">
+        <option value="coal_extracted(tons)">Coal Extracted (tons)</option>
+        <option value="fuel_used(liters)">Fuel Used (liters)</option>
+        <option value="electricity_used(kwh)">Electricity Used (kwh)</option>
+        <option value="fuel_emission">Fuel Emission</option>
+        <option value="electricity_emission">Electricity Emission</option>
+        <option value="total_emission">Total Emission</option>
+        <option value="methane_emission(m3)">Methane Emission (m3)</option>
+    </select>
+
+    <button onclick="getPrediction()">Predict</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+function getPrediction() {
+    let mineName = document.getElementById("mine_name").value;
+    let year = document.getElementById("year").value;
+    let factor = document.getElementById("factor").value;
+
+    fetch(`http://127.0.0.1:5000/predict?year=${year}&factor_name=${factor}&mine_name=${mineName}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById("result").innerHTML = `<p style="color:red;">${data.error}</p>`;
+            } else {
+                document.getElementById("result").innerHTML = `
+                    <p>Mine Name: ${data.mine_name}</p>
+                    <p>Year: ${data.year}</p>
+                    <p>Factor: ${data.factor_name}</p>
+                    <p>Prediction: ${data.prediction}</p>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById("result").innerHTML = "<p style='color:red;'>An error occurred. Please try again later.</p>";
+        });
+}
+</script>
+
+</body>
+</html>
