@@ -40,9 +40,10 @@ def predict():
         if factor_name not in features:
             return jsonify({"error": "Invalid factor_name. Please provide a valid factor name."}), 400
 
-        # Construct the data and model file paths based on mine_name
-        data_file_path = f'{mine_name}_data.csv'
-        model_file_path = f'{factor_name}_{mine_name}.pkl'
+        # Adjust file paths to be relative to the current working directory (Render compatibility)
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        data_file_path = os.path.join(base_dir, f'{mine_name}_data.csv')
+        model_file_path = os.path.join(base_dir, f'{factor_name}_{mine_name}.pkl')
 
         # Check if the data and model files exist
         if not os.path.exists(data_file_path):
